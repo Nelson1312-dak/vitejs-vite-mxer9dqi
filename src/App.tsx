@@ -1,11 +1,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Info, BarChart3, PieChart, Calculator, BookOpen, 
-  TrendingUp, TrendingDown, DollarSign, Shield, ArrowRight, X, Target, Activity, LayoutDashboard, Sparkles
+  TrendingUp, DollarSign, Shield, ArrowRight, X, Activity, LayoutDashboard, Sparkles
 } from 'lucide-react';
 
+// --- TYPES & INTERFACES ---
+interface Stock {
+  ticker: string;
+  name: string;
+  price: number;
+  pe: number;
+  divYield: number;
+  revenueGrowth: number;
+  stabilityScore: number;
+  category: string;
+}
+
+interface Portfolio {
+  targets: Record<string, number>;
+  setTargets: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  handleTargetChange: (changedAsset: string, valStr: string) => void;
+  expectedReturn: number;
+}
+
 // --- UTILITIES ---
-const formatVND = (amount) => {
+const formatVND = (amount: number) => {
   if (isNaN(amount) || !isFinite(amount)) return '0 ₫';
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -14,13 +33,13 @@ const formatVND = (amount) => {
   }).format(amount);
 };
 
-const formatPct = (decimal) => {
+const formatPct = (decimal: number) => {
   if (isNaN(decimal)) return '0.00%';
   return (decimal * 100).toFixed(2) + '%';
 };
 
 // --- CONSTANTS ---
-const ASSET_RETURNS = {
+const ASSET_RETURNS: Record<string, number> = {
   vnStocks: 12, // 12% Expected Annual Return
   gold: 8,      // 8% Expected Annual Return
   crypto: 15,   // 15% Expected Annual Return
@@ -38,7 +57,7 @@ const PRESET_PROFILES = [
 
 // --- CUSTOM HOOKS ---
 const useMarketData = () => {
-  const [stocks, setStocks] = useState([]);
+  const [stocks, setStocks] = useState<Stock[]>([]);
   const [marketIndices, setMarketIndices] = useState({
     vnIndex: 1250.45,
     vn30: 1265.10,
@@ -50,7 +69,7 @@ const useMarketData = () => {
 
   useEffect(() => {
     // Initial Data Payload
-    const initialStocks = [
+    const initialStocks: Stock[] = [
       { ticker: 'FPT', name: 'FPT Corp', price: 135000, pe: 18.5, divYield: 0.03, revenueGrowth: 0.22, stabilityScore: 9, category: 'Tech' },
       { ticker: 'VCB', name: 'Vietcombank', price: 92000, pe: 14.2, divYield: 0.02, revenueGrowth: 0.15, stabilityScore: 8, category: 'Bank' },
       { ticker: 'VNM', name: 'Vinamilk', price: 68000, pe: 16.1, divYield: 0.06, revenueGrowth: 0.05, stabilityScore: 9, category: 'F&B' },
@@ -93,7 +112,7 @@ const useMarketData = () => {
 };
 
 const usePortfolio = () => {
-  const [targets, setTargets] = useState({
+  const [targets, setTargets] = useState<Record<string, number>>({
     vnStocks: 25.0,
     gold: 15.0,
     crypto: 10.0,
@@ -102,14 +121,14 @@ const usePortfolio = () => {
     cash: 20.0
   });
 
-  const handleTargetChange = (changedAsset, valStr) => {
+  const handleTargetChange = (changedAsset: string, valStr: string) => {
     let newValue = parseFloat(valStr);
     if (isNaN(newValue)) newValue = 0;
     if (newValue > 100) newValue = 100;
     if (newValue < 0) newValue = 0;
 
     setTargets(prev => {
-      const oldTarget = prev[changedAsset];
+      const oldTarget = prev[changedAsset] || 0;
       const diff = newValue - oldTarget;
       
       const newTargets = { ...prev, [changedAsset]: newValue };
@@ -126,7 +145,7 @@ const usePortfolio = () => {
         });
       }
 
-      let currentSum = Object.values(newTargets).reduce((a,b) => a + (isNaN(b) ? 0 : b), 0);
+      let currentSum = Object.values(newTargets).reduce((a: number, b) => a + (isNaN(Number(b)) ? 0 : Number(b)), 0);
       if (Math.abs(currentSum - 100) > 0.01 && otherAssets.length > 0) {
         newTargets[otherAssets[0]] += (100 - currentSum);
       }
@@ -151,13 +170,13 @@ const usePortfolio = () => {
 };
 
 // --- UI COMPONENTS ---
-const Card = ({ children, className = '' }) => (
+const Card = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
   <div className={`bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-sm ${className}`}>
     {children}
   </div>
 );
 
-const Tooltip = ({ content, children }) => (
+const Tooltip = ({ content, children }: { content: string, children: React.ReactNode }) => (
   <div className="relative group flex items-center">
     {children}
     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-stone-800 text-stone-100 text-xs rounded-lg shadow-xl z-50 pointer-events-none">
@@ -167,14 +186,14 @@ const Tooltip = ({ content, children }) => (
   </div>
 );
 
-const NumberInput = ({ value, onChange, className, placeholder = "0" }) => {
-  const displayValue = (value === '' || value === null || isNaN(value)) ? '' : Number(value).toLocaleString('en-US');
+const NumberInput = ({ value, onChange, className, placeholder = "0" }: { value: string | number, onChange: (val: number | string) => void, className?: string, placeholder?: string }) => {
+  const displayValue = (value === '' || value === null || isNaN(Number(value))) ? '' : Number(value).toLocaleString('en-US');
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/,/g, ''); 
     if (rawValue === '') {
       onChange('');
-    } else if (!isNaN(rawValue)) {
+    } else if (!isNaN(Number(rawValue))) {
       onChange(Number(rawValue));
     }
   };
@@ -193,19 +212,17 @@ const NumberInput = ({ value, onChange, className, placeholder = "0" }) => {
 
 // --- MAIN VIEWS ---
 
-const UnifiedWealthDashboard = ({ portfolio }) => {
+const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
   const { targets, setTargets, handleTargetChange, expectedReturn } = portfolio;
   
   // Financial Inputs 
-  const [currentCapital, setCurrentCapital] = useState(100000000); // 100M VND default
-  const [targetGoal, setTargetGoal] = useState(3000000000);        // 3B VND default
-  const [years, setYears] = useState(10);                          // 10 years default
-
-  const targetTotal = Object.values(targets).reduce((a, b) => a + Number(b), 0);
+  const [currentCapital, setCurrentCapital] = useState<number | string>(100000000); // 100M VND default
+  const [targetGoal, setTargetGoal] = useState<number | string>(3000000000);        // 3B VND default
+  const [years, setYears] = useState<number | string>(10);                          // 10 years default
 
   // Math: Calculate Required Monthly Savings (PMT)
   const r = expectedReturn / 100 / 12; // Monthly rate
-  const n = Math.max(years, 0.1) * 12; // Total months (prevent divide by 0)
+  const n = Math.max(Number(years), 0.1) * 12; // Total months (prevent divide by 0)
   const pv = Number(currentCapital) || 0;
   const fv = Number(targetGoal) || 0;
 
@@ -237,8 +254,8 @@ const UnifiedWealthDashboard = ({ portfolio }) => {
     };
   });
 
-  const formatAssetLabel = (key) => {
-    const labels = { 
+  const formatAssetLabel = (key: string) => {
+    const labels: Record<string, string> = { 
       vnStocks: 'VN Stocks', 
       gold: 'Gold (SJC)', 
       crypto: 'Crypto (USDT)', 
@@ -363,13 +380,13 @@ const UnifiedWealthDashboard = ({ portfolio }) => {
                 <input 
                   type="range" 
                   min="1" max="40" step="1"
-                  value={years} 
+                  value={Number(years)} 
                   onChange={(e) => setYears(Number(e.target.value))}
                   className="flex-1 accent-stone-800 dark:accent-stone-300"
                 />
                 <input 
                   type="number" 
-                  value={years} 
+                  value={Number(years)} 
                   onChange={(e) => setYears(Number(e.target.value))}
                   className="w-20 px-3 py-2 text-center font-semibold text-stone-800 dark:text-stone-100 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-400"
                 />
@@ -488,14 +505,14 @@ const UnifiedWealthDashboard = ({ portfolio }) => {
   );
 };
 
-const StockScreener = ({ stocks }) => {
+const StockScreener = ({ stocks }: { stocks: Stock[] }) => {
   const [filter, setFilter] = useState('all');
 
   const filteredStocks = useMemo(() => {
     switch(filter) {
-      case 'value': return stocks.filter(s => s.pe < 15 && s.divYield > 0.03);
-      case 'growth': return stocks.filter(s => s.revenueGrowth >= 0.15);
-      case 'stability': return stocks.filter(s => s.stabilityScore >= 8);
+      case 'value': return stocks.filter((s: Stock) => s.pe < 15 && s.divYield > 0.03);
+      case 'growth': return stocks.filter((s: Stock) => s.revenueGrowth >= 0.15);
+      case 'stability': return stocks.filter((s: Stock) => s.stabilityScore >= 8);
       default: return stocks;
     }
   }, [stocks, filter]);
@@ -535,7 +552,7 @@ const StockScreener = ({ stocks }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredStocks.map((stock) => (
+            {filteredStocks.map((stock: Stock) => (
               <tr key={stock.ticker} className="border-b border-stone-100 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
                 <td className="py-3 px-4 font-semibold text-stone-800 dark:text-stone-200">
                   <div className="flex flex-col">
@@ -566,10 +583,10 @@ const StockScreener = ({ stocks }) => {
 };
 
 const CompoundCalculator = () => {
-  const [initial, setInitial] = useState(10000000);
-  const [monthly, setMonthly] = useState(5000000);
-  const [rate, setRate] = useState(8.5); 
-  const [years, setYears] = useState(10);
+  const [initial, setInitial] = useState<number | string>(10000000);
+  const [monthly, setMonthly] = useState<number | string>(5000000);
+  const [rate, setRate] = useState<number | string>(8.5); 
+  const [years, setYears] = useState<number | string>(10);
 
   const calculateTotal = () => {
     let total = Number(initial);
@@ -605,11 +622,11 @@ const CompoundCalculator = () => {
           <div className="flex gap-4">
             <div className="w-1/2">
               <label className="block text-sm font-medium text-stone-600 mb-1">Expected Rate (%)</label>
-              <input type="number" step="0.1" value={rate} onChange={e => setRate(e.target.value)} className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-md" />
+              <input type="number" step="0.1" value={Number(rate)} onChange={e => setRate(e.target.value)} className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-md" />
             </div>
             <div className="w-1/2">
               <label className="block text-sm font-medium text-stone-600 mb-1">Years</label>
-              <input type="number" value={years} onChange={e => setYears(e.target.value)} className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-md" />
+              <input type="number" value={Number(years)} onChange={e => setYears(e.target.value)} className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-md" />
             </div>
           </div>
         </div>
@@ -635,10 +652,10 @@ const CompoundCalculator = () => {
   );
 };
 
-const AssetExplorer = ({ selectedAsset, onClose }) => {
+const AssetExplorer = ({ selectedAsset, onClose }: { selectedAsset: string | null, onClose: () => void }) => {
   if (!selectedAsset) return null;
 
-  const content = {
+  const content: Record<string, any> = {
     stocks: {
       title: 'Vietnamese Equities',
       def: 'Shares representing ownership in public companies listed on HOSE, HNX, or UPCoM.',
@@ -703,7 +720,7 @@ const AssetExplorer = ({ selectedAsset, onClose }) => {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-500 mb-2">Typical Platforms</h3>
             <div className="flex flex-wrap gap-2">
-              {data.platforms.map(p => (
+              {data.platforms.map((p: string) => (
                 <span key={p} className="px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full text-sm font-medium">
                   {p}
                 </span>
@@ -727,7 +744,7 @@ export default function App() {
   const { stocks, marketIndices, lastUpdated, isLive } = useMarketData();
   const portfolio = usePortfolio();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
 
   const navItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Wealth Dashboard' },
