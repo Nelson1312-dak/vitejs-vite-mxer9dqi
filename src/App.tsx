@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Info, BarChart3, Calculator, BookOpen, 
-  TrendingUp, Shield, ArrowRight, X, LayoutDashboard, Sparkles, AlertTriangle
+  BarChart3, Calculator, 
+  Shield, ArrowRight, X, LayoutDashboard, Sparkles, AlertTriangle
 } from 'lucide-react';
 
 // --- CẤU HÌNH API (API CONFIGURATION) ---
