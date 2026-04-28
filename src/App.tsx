@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Info, BarChart3, PieChart, Calculator, BookOpen, 
-  TrendingUp, DollarSign, Shield, ArrowRight, X, Activity, LayoutDashboard, Sparkles
+  Info, BarChart3, Calculator, BookOpen, 
+  TrendingUp, Shield, ArrowRight, X, LayoutDashboard, Sparkles
 } from 'lucide-react';
 
 // --- TYPES & INTERFACES ---
@@ -79,7 +79,6 @@ const useMarketData = () => {
     ];
     setStocks(initialStocks);
 
-    // Goal 1: DNSE API Integration (Reload every 3 secs)
     const fetchRealtimeData = async () => {
       try {
         const response = await fetch('https://services.entrade.com.vn/chart-api/quotes?symbols=FPT,VCB,VNM,HPG,TCB,MWG');
@@ -213,7 +212,7 @@ const NumberInput = ({ value, onChange, className, placeholder = "0" }: { value:
 // --- MAIN VIEWS ---
 
 const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
-  const { targets, setTargets, handleTargetChange, expectedReturn } = portfolio;
+  const { targets, handleTargetChange, expectedReturn } = portfolio;
   
   // Financial Inputs 
   const [currentCapital, setCurrentCapital] = useState<number | string>(100000000); // 100M VND default
@@ -233,7 +232,7 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
       : (fv - pv) / n;
   }
   
-  const validMonthly = Math.max(0, requiredMonthly); // Prevent negative savings if goal is already met
+  const validMonthly = Math.max(0, requiredMonthly);
 
   // Wealth Insight Math (Compound Effect)
   const totalPrincipal = pv + (validMonthly * n);
@@ -273,7 +272,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
       <Card className="p-6 bg-white dark:bg-stone-900 shadow-sm border border-stone-200 dark:border-stone-800 rounded-xl">
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
           
-          {/* Left: The Big Number */}
           <div className="flex-1 w-full">
             <h3 className="text-stone-500 dark:text-stone-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2 mb-3">
               <Sparkles size={14}/> Required Monthly Action
@@ -304,7 +302,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
             )}
           </div>
 
-          {/* Right: Compact Compound Effect Visualizer */}
           {!isInfinite && pv < fv && (
             <div className="flex-1 w-full bg-stone-800 dark:bg-stone-950 border border-stone-700 rounded-xl p-5">
               <div className="flex justify-between items-end mb-3">
@@ -333,10 +330,8 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
         </div>
       </Card>
 
-      {/* --- MIDDLE ROW: PARAMETERS & STRATEGY --- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* 1. Parameters */}
         <Card className="p-6 border-t-4 border-t-stone-300 dark:border-t-stone-700">
           <div className="mb-6 pb-4 border-b border-stone-100 dark:border-stone-800">
             <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">1. Parameters</h3>
@@ -344,7 +339,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
           </div>
           
           <div className="space-y-6">
-            {/* Current Savings */}
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <label className="font-medium text-stone-600 dark:text-stone-400">Total Savings Currently</label>
@@ -357,7 +351,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
               />
             </div>
 
-            {/* Target Goal */}
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <label className="font-medium text-stone-600 dark:text-stone-400">Target Goal Amount</label>
@@ -370,7 +363,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
               />
             </div>
 
-            {/* Timeline */}
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <label className="font-medium text-stone-600 dark:text-stone-400">Timeline</label>
@@ -395,7 +387,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
           </div>
         </Card>
 
-        {/* 2. Allocation Strategy */}
         <Card className="p-6 border-t-4 border-t-rose-500">
           <div className="flex justify-between items-end mb-6 pb-4 border-b border-stone-100 dark:border-stone-800">
             <div>
@@ -404,7 +395,7 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
             </div>
             <div className="text-right">
               <div className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Target ER</div>
-              <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">{expectedReturn.toFixed(1)}%</div>
+              <div className="text-2xl font-bold text-stone-800 dark:text-stone-100">{expectedReturn.toFixed(1)}%</div>
             </div>
           </div>
 
@@ -412,7 +403,7 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
             {PRESET_PROFILES.map(rec => (
               <button 
                 key={rec.label}
-                onClick={() => setTargets(rec.t)}
+                onClick={() => portfolio.setTargets(rec.t)}
                 className="whitespace-nowrap px-4 py-2 text-xs font-semibold bg-stone-100 hover:bg-rose-100 text-stone-700 hover:text-rose-800 dark:bg-stone-800 dark:hover:bg-rose-900/50 dark:text-stone-300 dark:hover:text-rose-300 rounded-full transition-colors border border-transparent focus:border-rose-300"
               >
                 {rec.label}
@@ -454,7 +445,6 @@ const UnifiedWealthDashboard = ({ portfolio }: { portfolio: Portfolio }) => {
         </Card>
       </div>
 
-      {/* --- BOTTOM ROW: EXECUTION PLAN --- */}
       <Card className="p-6 border-t-4 border-t-teal-600">
         <div className="flex items-center gap-2 mb-6 pb-4 border-b border-stone-100 dark:border-stone-800">
           <h3 className="font-bold text-stone-800 dark:text-stone-100 text-lg">3. Execution Plan</h3>
