@@ -1,14 +1,112 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
   <head>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+
+    <!-- SEO Primary -->
+    <title>Công Cụ Tính Lãi Kép Online | WealthtechHub</title>
+    <meta name="description" content="Công cụ tính lãi kép online miễn phí. Nhập vốn ban đầu, số tiền góp hàng tháng, lãi suất và số năm — xem ngay giá trị tương lai và tổng lãi nhận được. Lập kế hoạch tài chính cá nhân cho người Việt." />
+    <meta name="keywords" content="công cụ tính lãi kép, công thức tính lãi kép, tính lãi suất kép, máy tính lãi kép, lãi kép online, lập kế hoạch tài chính cá nhân, đầu tư quỹ mở, tài chính cá nhân" />
+    <link rel="canonical" href="https://wealth-tools.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wealth-tools.vercel.app/" />
+    <meta property="og:title" content="Công Cụ Tính Lãi Kép Online Miễn Phí | WealthtechHub" />
+    <meta property="og:description" content="Tính lãi kép online nhanh chóng. Lập kế hoạch tài chính cá nhân, phân bổ danh mục đầu tư cổ phiếu VN, vàng, crypto. Miễn phí 100%." />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:site_name" content="WealthtechHub" />
+
+    <!-- Structured Data: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "WealthtechHub - Công Cụ Tính Lãi Kép",
+      "url": "https://wealth-tools.vercel.app/",
+      "description": "Công cụ tính lãi kép và lập kế hoạch tài chính cá nhân miễn phí cho người Việt Nam.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "vi",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "VND"
+      }
+    }
+    </script>
+
+    <!-- Structured Data: FAQ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Công thức tính lãi kép là gì?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Công thức tính lãi kép: A = P × (1 + r/n)^(n×t), trong đó A là giá trị tương lai, P là vốn ban đầu, r là lãi suất năm, n là số lần tính lãi trong năm, t là số năm đầu tư."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Lãi kép khác lãi đơn như thế nào?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Lãi đơn chỉ tính lãi trên vốn gốc ban đầu. Lãi kép tính lãi trên cả vốn gốc lẫn lãi đã tích lũy, tạo ra hiệu ứng tăng trưởng theo cấp số nhân theo thời gian."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Làm thế nào để tính lãi kép hàng tháng?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Để tính lãi kép hàng tháng: chia lãi suất năm cho 12, rồi nhân với số tháng đầu tư. Công thức: A = P × (1 + r/12)^(12×t). Bạn có thể dùng công cụ tính lãi kép online tại WealthtechHub để tính tự động."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- SEO Content: visible to Google, hidden to users after React loads -->
+    <noscript>
+      <main style="max-width:800px;margin:0 auto;padding:24px;font-family:sans-serif">
+        <h1>Công Cụ Tính Lãi Kép Online Miễn Phí</h1>
+        <p>WealthtechHub cung cấp công cụ tính lãi kép online miễn phí, giúp bạn lập kế hoạch tài chính cá nhân và tính toán mức tăng trưởng tài sản dài hạn.</p>
+
+        <h2>Công Thức Tính Lãi Kép</h2>
+        <p>Công thức lãi kép cơ bản: <strong>A = P × (1 + r/n)^(n×t)</strong></p>
+        <ul>
+          <li><strong>A</strong>: Giá trị tương lai</li>
+          <li><strong>P</strong>: Vốn ban đầu</li>
+          <li><strong>r</strong>: Lãi suất năm (dạng thập phân)</li>
+          <li><strong>n</strong>: Số lần tính lãi trong năm</li>
+          <li><strong>t</strong>: Số năm đầu tư</li>
+        </ul>
+
+        <h2>Cách Tính Lãi Kép Hàng Tháng</h2>
+        <p>Để tính lãi kép hàng tháng với khoản góp định kỳ, bạn dùng công thức: mỗi tháng cộng thêm khoản góp rồi nhân với (1 + lãi suất tháng). Công cụ của chúng tôi tự động tính toán cho bạn.</p>
+
+        <h2>Tại Sao Lãi Kép Quan Trọng?</h2>
+        <p>Lãi kép giúp tài sản tăng trưởng theo cấp số nhân. Với lãi suất 8.5%/năm, 100 triệu đồng sau 20 năm sẽ tăng lên hơn 500 triệu — gấp 5 lần so với không đầu tư.</p>
+
+        <h2>Công Cụ Tài Chính Khác</h2>
+        <ul>
+          <li>Bảng giá cổ phiếu VN (FPT, VCB, VNM, HPG, TCB, MWG)</li>
+          <li>Chiến lược phân bổ danh mục đầu tư (Conservative, Moderate, Aggressive)</li>
+          <li>Theo dõi VN-INDEX và tỷ giá USDT/VND</li>
+        </ul>
+      </main>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
